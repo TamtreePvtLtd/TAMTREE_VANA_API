@@ -25,7 +25,7 @@ exports.createJewelleryItem = async (req, res, next) => {
       (file) => file.fieldname === "posterImage"
     );
 
-    const jewelleryCollectionIds = JSON.parse(formData.JewelleryCollection).map(
+    const jewelleryCollectionIds = (formData.JewelleryCollection).map(
       (id) => new mongoose.Types.ObjectId(id)
     );
     const posterS3FileName = await uploadToS3(
@@ -52,7 +52,7 @@ exports.createJewelleryItem = async (req, res, next) => {
       price: formData.price,
       images: s3ImageUrls,
       description: formData.description,
-      netWeight: parseInt(formData.netWeight) ?? 0,
+      // netWeight: parseInt(formData.netWeight) ?? 0,
       posterURL: posterImageUrl,
       JewelleryCollection: jewelleryCollectionIds,
     });
