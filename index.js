@@ -12,6 +12,7 @@ const connectionString = process.env.CONNECTION_STRING || "";
 //Routes imports goes here
 const JewelleryCollectionRouter = require("./routes/JewelleryCollection");
 const JewelleryItemRouter = require("./routes/JewelleryItem");
+var customerRouter = require("./routes/Customer");
 
 // Middlewares goes here
 app.use((req, res, next) => {
@@ -58,6 +59,8 @@ mongoose
 //Routes
 app.use("/JewelleryCollection", JewelleryCollectionRouter);
 app.use("/JewelleryItem", JewelleryItemRouter);
+app.use("/customer", customerRouter);
+
 //these middleware should at last but before error handlers
 app.use("*", (req, res, next) => {
   const err = new Error(`Can't find ${req.originalUrl} on the server`);
