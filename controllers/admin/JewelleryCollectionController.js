@@ -12,49 +12,15 @@ const { deleteFromS3, uploadToS3 } = require("../../config/s3Config");
  * @param {Request} req - The Express request object
  * @param {Response} res - The Express response object
  */
-// exports.createJewelleryCollection = async (req, res, next) => {
-//     try {
-//         const { name, description } = req.body
-//         // const image = req.file
-//         var newCategoryDoc = await JewelleryCollection.create({
-//             name, description
-//         })
-//         // const formData = req.body;
-//         // console.log(req.body);
-//         // var categoryImageS3Location = req.file;
-
-//         // if (!categoryImageS3Location) {
-//         //     throw new Error("Category image is required");
-//         // }
-
-//         // const existCategory = await JewelleryCollection.findOne({
-//         //     name: { $regex: new RegExp(formData.name, "i") },
-//         // });
-
-//         // if (existCategory) {
-//         //     throw new Error("Category with this name already exists");
-//         // }
-
-//         // var newCategoryDoc = await JewelleryCollection.create({
-//         //     // image: categoryImageS3Location.location,
-//         //     description: formData.description,
-//         //     name: formData.name.trim(),
-//         // });
-//         console.log(newCategoryDoc);
-
-//         res.json(newCategoryDoc);
-//     } catch (error) {
-//         if (req.file) {
-//             await deleteImageFromS3(req.file.key);
-//         }
-//         next(error);
-//     }
-// };
 
 exports.createJewelleryCollection = async (req, res, next) => {
   try {
     const formData = req.body;
-
+    if (formData.description && formData.description.length > 50) {
+      const error = new Error("Description must be 50 characters or less");
+      error.statusCode = 422;
+      throw error;
+    }
     var newJewelleryCollectionDoc = await JewelleryCollection.create({
       name: formData.name.trim(),
       description: formData.description.trim(),
@@ -117,6 +83,12 @@ exports.updateJewelleryCollection = async (req, res, next) => {
     if (!formData) {
       const error = new Error("formData not found");
       error.statusCode = 446;
+      throw error;
+    }
+
+    if (formData.description && formData.description.length > 50) {
+      const error = new Error("Description must be 50 characters or less");
+      error.statusCode = 422;
       throw error;
     }
 
@@ -184,7 +156,6 @@ exports.deleteJewelleryCollection = async (req, res, next) => {
       error.statusCode = 419;
       throw error;
     }
-   
 
     const deleteResult = await JewelleryCollection.deleteOne({
       _id: JewelleryCollectionId,
@@ -195,7 +166,7 @@ exports.deleteJewelleryCollection = async (req, res, next) => {
       error.statusCode = 521;
       throw error;
     }
-   
+
     res.json(deleteResult);
   } catch (error) {
     console.log("168", error);
