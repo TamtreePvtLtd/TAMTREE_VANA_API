@@ -2,6 +2,7 @@ var express = require("express");
 require("dotenv").config();
 const mongoose = require("mongoose");
 var cors = require("cors");
+const cookieParser = require('cookie-parser');
 
 var app = express();
 
@@ -37,6 +38,7 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // app.use(express.static(path.join(__dirname, 'public')));
 
