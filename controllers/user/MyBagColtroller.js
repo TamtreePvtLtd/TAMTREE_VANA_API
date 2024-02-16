@@ -16,7 +16,6 @@ exports.getMyBag = async (req, res, next) => {
         const jewelleryItemId = new mongoose.Types.ObjectId(JewelleryItemId);
 
         const jewelleryItem = await JewelleryItemModel.findById(jewelleryItemId);
-        console.log(jewelleryItem);
         if (!jewelleryItem) {
             const error = new Error("Product not found");
             error.statusCode = 404;
