@@ -2,11 +2,7 @@ const mongoose = require("mongoose")
 
 const JewelleryCollectionSchema = new mongoose.Schema({
     name: String,
-    image: {
-        type: String,
-        required: false
-    },
-    description: {
+       description: {
         type: String,
         required: false,
     },

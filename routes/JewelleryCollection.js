@@ -16,8 +16,9 @@ router.get(
 );
 
 router.post(
-    "/createJewelleryCollection",uploadByMulterS3.single("image"),
-    use(categoryControlleradmin.createJewelleryCollection)
+  "/createJewelleryCollection",
+  uploadByMulterS3.single("image"),
+  use(categoryControlleradmin.createJewelleryCollection)
 );
 
 router.put(
