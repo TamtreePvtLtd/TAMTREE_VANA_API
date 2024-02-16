@@ -55,7 +55,6 @@ const hasMoreThanOneWord = (str) => {
 exports.validateAndCreateJewelleryCollection = async (req, res, next) => {
   try {
     const { name, description } = req.body;
-    console.log("Received data:", name, description);
     const newCategoryDoc = await validateAndCreateJewelleryCollection(
       name,
       description
