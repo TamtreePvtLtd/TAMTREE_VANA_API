@@ -1,17 +1,16 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const JewelleryCollectionSchema = new mongoose.Schema({
-    name: String,
-    image: {
-        type: String,
-        required: false
-    },
-    description: {
-        type: String,
-        required: false,
-    },
-
+  name: String,
+  description: {
+    type: String,
+    required: true,
+    maxlength: [50, "Description must be 20 characters or less"],
+  },
 });
-const JewelleryCollectionModel = mongoose.model('JewelleryCollection', JewelleryCollectionSchema);
+const JewelleryCollectionModel = mongoose.model(
+  "JewelleryCollection",
+  JewelleryCollectionSchema
+);
 
-module.exports = JewelleryCollectionModel
+module.exports = JewelleryCollectionModel;
