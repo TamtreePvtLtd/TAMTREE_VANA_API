@@ -319,9 +319,11 @@ exports.fetchJewelleryItemByJewelleryCollectionId = async (req, res, next) => {
           price: "$AllJewelleryitems.price",
           inStock: "$AllJewelleryitems.inStock",
           // netWeight: "$AllJewelleryitems.netWeight",
+          images: "$AllJewelleryitems.images",
           posterURL: "$AllJewelleryitems.posterURL",
           categoryName: "$name",
           JewelleryCollectionId: "$_id",
+          JewelleryCollection: JewelleryCollectionId,
         },
       },
     ]);
