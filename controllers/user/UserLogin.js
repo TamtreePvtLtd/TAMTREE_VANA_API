@@ -41,6 +41,7 @@ exports.signup = async (req, res, next) => {
         {
           userId: savedUser._id,
           phoneNumber: savedUser.phoneNumber,
+          email:savedUser.email,
           userName: savedUser.userName,
         },
         SECRET_KEY
@@ -58,6 +59,7 @@ exports.signup = async (req, res, next) => {
             userId: savedUser._id,
             phoneNumber: savedUser.phoneNumber,
             userName: savedUser.userName,
+            email:savedUser.email
           },
         });
     }
@@ -73,15 +75,15 @@ exports.signup = async (req, res, next) => {
  */
 
 exports.login = async (req, res, next) => {
-  let { phoneNumber, password } = req.body;
+  let { email, password } = req.body;
 
-  if (phoneNumber === "" || password === "") {
+  if (email === "" || password === "") {
     const error = new Error("Empty credentials supplied");
     error.statusCode = 454;
     throw error;
   } else {
     try {
-      const user = await UserModel.findOne({ phoneNumber });
+      const user = await UserModel.findOne({ email });
       if (!user) {
         const error = new Error("User Not Available Please Signup to continue");
         error.statusCode = 401;
@@ -95,16 +97,11 @@ exports.login = async (req, res, next) => {
         throw error;
       }
 
-      if (user.role !== "customer") {
-        const error = new Error("Invalid credentials entered!");
-        error.statusCode = 500;
-        throw error;
-      }
-
       var userObj = {
         userId: user._id,
-        phoneNumber: user.phoneNumber,
+        email: user.email,
         userName: user.userName,
+        phoneNumber:user.phoneNumber
       };
 
       const token = jwt.sign(userObj, SECRET_KEY);
@@ -115,12 +112,79 @@ exports.login = async (req, res, next) => {
       });
 
       res.status(200).json({
-        message: "Signin successful",
+        message: "Login successful",
         data: userObj,
       });
     } catch (error) {
       console.error(error);
       next(error);
     }
+  }
+};
+
+/**
+ * @param {Request} req - The Express request object
+ * @param {Response} res - The Express response object
+ */
+exports.logout = async (req, res) => {
+  res.clearCookie(ACCESS_TOKEN);
+  res.status(200).json({
+    status: true,
+    message: "Logged out successfully",
+    data: null,
+  });
+};
+
+exports.isAuthorized = async (req, res) => {
+  const { vana_access_token } = req.cookies;
+
+  if (vana_access_token) {
+    // Check if the access token is valid
+    const payload = await validateAccessToken(vana_access_token);
+    if (payload) {
+      res.json(payload);
+    } else {
+      res.json(null);
+    }
+  } else {
+    res.json(null);
+  }
+};
+
+async function validateAccessToken(token) {
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const { userId } = decoded;
+
+    // Check if the userId exists in the UserModel database
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return null;
+    }
+    return decoded;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * @param {Request} req - The Express request object
+ * @param {Response} res - The Express response object
+ */
+exports.getUserByUserId = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    const user = await UserModel.findById(userId).select(
+      "name phoneNumber email"
+    );
+
+    if (!user) {
+      const error = new Error("user not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    return res.json(user);
+  } catch (error) {
+    next(error);
   }
 };
