@@ -136,11 +136,11 @@ exports.logout = async (req, res) => {
 };
 
 exports.isAuthorized = async (req, res) => {
-  const { vana_access_token } = req.cookies;
+  const { nks_access_token } = req.cookies;
 
-  if (vana_access_token) {
+  if (nks_access_token) {
     // Check if the access token is valid
-    const payload = await validateAccessToken(vana_access_token);
+    const payload = await validateAccessToken(nks_access_token);
     if (payload) {
       res.json(payload);
     } else {
