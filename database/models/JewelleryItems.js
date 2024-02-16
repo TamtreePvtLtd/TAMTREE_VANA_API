@@ -3,17 +3,17 @@ const JewelleryCollectionModel = require("./JewelleryCollection");
 
 const JewelleryItemSchema = new mongoose.Schema({
   title: String,
-  // images: [
-  //     {
-  //         type: String,
-  //         required: false
-  //     },
-  // ],
+  images: [
+      {
+          type: String,
+          required: false
+      },
+  ],
   inStock: String,
   price: Number,
   description: String,
   // netWeight: Number,
-  // posterURL: String,
+  posterURL: String,
   JewelleryCollection: [
     { type: mongoose.Schema.Types.ObjectId, ref: JewelleryCollectionModel },
   ],

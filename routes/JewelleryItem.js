@@ -30,7 +30,7 @@ router.delete(
   use(JewelleryItemControlleradmin.deleteJewelleryItem)
 );
 router.get(
-  "/fetchJewelleryItemsByJewelleryCollectionId/:JewelleryCollectionId",
+  "/fetchJewelleryItemByJewelleryCollectionId/:JewelleryCollectionId",
   use(JewelleryItemControlleradmin.fetchJewelleryItemByJewelleryCollectionId)
 );
 

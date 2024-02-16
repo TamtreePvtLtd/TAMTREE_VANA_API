@@ -138,7 +138,6 @@ exports.searchJewelleryCollectionItem = async (req, res) => {
       res.status(400).json({ error: "Search term is missing" });
     }
   } catch (error) {
-    console.error("Error searching jewellery collection items:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

@@ -18,43 +18,43 @@ exports.createJewelleryItem = async (req, res, next) => {
   try {
     const formData = req.body;
 
-    // const images = req.files.filter((file) =>
-    //   file.fieldname.startsWith("image")
-    // );
-    // const posterImage = req.files.find(
-    //   (file) => file.fieldname === "posterImage"
-    // );
+    const images = req.files.filter((file) =>
+      file.fieldname.startsWith("image")
+    );
+    const posterImage = req.files.find(
+      (file) => file.fieldname === "posterImage"
+    );
 
     const jewelleryCollectionIds = formData.JewelleryCollection.map(
       (id) => new mongoose.Types.ObjectId(id)
     );
-    // const posterS3FileName = await uploadToS3(
-    //   posterImage.buffer,
-    //   posterImage.originalname,
-    //   posterImage.mimetype
-    // );
-    // const posterImageUrl = `${process.env.BUCKET_URL}${posterS3FileName}`;
+    const posterS3FileName = await uploadToS3(
+      posterImage.buffer,
+      posterImage.originalname,
+      posterImage.mimetype
+    );
+    const posterImageUrl = `${process.env.BUCKET_URL}${posterS3FileName}`;
 
-    // const s3ImageUrls = await Promise.all(
-    //   images.map(async (image) => {
-    //     const s3FileName = await uploadToS3(
-    //       image.buffer,
-    //       image.originalname,
-    //       image.mimetype
-    //     );
-    //     const url = `${process.env.BUCKET_URL}${s3FileName}`;
-    //     return url;
-    //   })
-    // );
+    const s3ImageUrls = await Promise.all(
+      images.map(async (image) => {
+        const s3FileName = await uploadToS3(
+          image.buffer,
+          image.originalname,
+          image.mimetype
+        );
+        const url = `${process.env.BUCKET_URL}${s3FileName}`;
+        return url;
+      })
+    );
 
     var newItemDoc = await JewelleryItems.create({
       title: formData.title,
       price: formData.price,
-      // images: s3ImageUrls,
+      images: s3ImageUrls,
       inStock: formData.inStock,
       description: formData.description,
       // netWeight: parseInt(formData.netWeight) ?? 0,
-      // posterURL: posterImageUrl,
+      posterURL: posterImageUrl,
       JewelleryCollection: jewelleryCollectionIds,
     });
 
@@ -87,12 +87,12 @@ exports.getAllJewelleryItems = async (req, res, next) => {
     {
       $project: {
         title: 1,
-        // images: 1,
+        images: 1,
         price: 1,
         inStock: 1,
         description: 1,
         netWeight: 1,
-        // posterURL: 1,
+        posterURL: 1,
         JewelleryCollection: {
           _id: 1,
           name: 1,
@@ -114,7 +114,7 @@ exports.updateJewelleryItem = async (req, res, next) => {
     const JewelleryItemId = req.params.JewelleryItemId;
     const formData = req.body;
 
-    const jewelleryCollectionIds = JSON.parse(formData.JewelleryCollection).map(
+    const jewelleryCollectionIds = formData.JewelleryCollection.map(
       (id) => new mongoose.Types.ObjectId(id)
     );
 
@@ -187,11 +187,11 @@ exports.updateJewelleryItem = async (req, res, next) => {
       _id: formData.id,
       title: formData.title,
       description: formData.description,
-      // images: updatedImages,
+      images: updatedImages,
       // netWeight: parseInt(formData.netWeight) ?? 0,
       inStock: formData.inStock,
       price: formData.price,
-      // posterURL: posterImageUrl,
+      posterURL: posterImageUrl,
       JewelleryCollection: jewelleryCollectionIds,
     };
 
@@ -319,9 +319,11 @@ exports.fetchJewelleryItemByJewelleryCollectionId = async (req, res, next) => {
           price: "$AllJewelleryitems.price",
           inStock: "$AllJewelleryitems.inStock",
           // netWeight: "$AllJewelleryitems.netWeight",
-          // posterURL: "$AllJewelleryitems.posterURL",
+          images: "$AllJewelleryitems.images",
+          posterURL: "$AllJewelleryitems.posterURL",
           categoryName: "$name",
           JewelleryCollectionId: "$_id",
+          JewelleryCollection: JewelleryCollectionId,
         },
       },
     ]);

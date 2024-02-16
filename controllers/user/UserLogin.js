@@ -64,7 +64,6 @@ exports.signup = async (req, res, next) => {
         });
     }
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
@@ -116,7 +115,6 @@ exports.login = async (req, res, next) => {
         data: userObj,
       });
     } catch (error) {
-      console.error(error);
       next(error);
     }
   }
