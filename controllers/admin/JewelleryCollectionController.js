@@ -16,11 +16,6 @@ const { deleteFromS3, uploadToS3 } = require("../../config/s3Config");
 exports.createJewelleryCollection = async (req, res, next) => {
   try {
     const formData = req.body;
-    if (formData.description && formData.description.length > 50) {
-      const error = new Error("Description must be 50 characters or less");
-      error.statusCode = 422;
-      throw error;
-    }
     var newJewelleryCollectionDoc = await JewelleryCollection.create({
       name: formData.name.trim(),
       description: formData.description.trim(),
@@ -82,12 +77,6 @@ exports.updateJewelleryCollection = async (req, res, next) => {
     if (!formData) {
       const error = new Error("formData not found");
       error.statusCode = 446;
-      throw error;
-    }
-
-    if (formData.description && formData.description.length > 50) {
-      const error = new Error("Description must be 50 characters or less");
-      error.statusCode = 422;
       throw error;
     }
 
