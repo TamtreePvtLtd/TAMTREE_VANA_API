@@ -5,7 +5,6 @@ const JewelleryCollectionSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true,
-    maxlength: [50, "Description must be 20 characters or less"],
   },
 });
 const JewelleryCollectionModel = mongoose.model(
