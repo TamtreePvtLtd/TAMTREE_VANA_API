@@ -16,10 +16,10 @@ exports.signup = async (req, res, next) => {
 
   try {
     // Check if the user already exists
-    const existingUser = await UserModel.findOne({ phoneNumber });
+    const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       const error = new Error(
-        "Invalid User with provided phonenumber already exists entered!"
+        "Invalid User with provided email already exists entered!"
       );
       error.statusCode = 409;
       throw error;
@@ -125,14 +125,17 @@ exports.login = async (req, res, next) => {
  * @param {Response} res - The Express response object
  */
 exports.logout = async (req, res) => {
-  res.clearCookie(ACCESS_TOKEN);
+  res.clearCookie(ACCESS_TOKEN,this.isAuthorized);
   res.status(200).json({
     status: true,
     message: "Logged out successfully",
     data: null,
   });
 };
-
+/**
+ * @param {Request} req - The Express request object
+ * @param {Response} res - The Express response object
+ */
 exports.isAuthorized = async (req, res) => {
   const { nks_access_token } = req.cookies;
 
