@@ -114,16 +114,15 @@ exports.updateJewelleryItem = async (req, res, next) => {
     const JewelleryItemId = req.params.JewelleryItemId;
     const formData = req.body;
 
-    const jewelleryCollectionIds = formData.JewelleryCollection.map(
-      (id) => new mongoose.Types.ObjectId(id)
-    );
+    const jewelleryCollectionIds =
+      formData.JewelleryCollection &&
+      formData.JewelleryCollection.map((id) => new mongoose.Types.ObjectId(id));
 
-    const images = req.files.filter((file) =>
-      file.fieldname.startsWith("image")
-    );
-    const posterImage = req.files.find(
-      (file) => file.fieldname === "posterImage"
-    );
+    const images =
+      req.files &&
+      req.files.filter((file) => file.fieldname.startsWith("image"));
+    const posterImage =
+      req.files && req.files.find((file) => file.fieldname === "posterImage");
 
     if (!JewelleryItemId) {
       const error = new Error("JewelleryItemId is required");
@@ -170,15 +169,16 @@ exports.updateJewelleryItem = async (req, res, next) => {
     }
 
     const s3ImageUrls = await Promise.all(
-      images.map(async (image) => {
-        const s3FileName = await uploadToS3(
-          image.buffer,
-          image.originalname,
-          image.mimetype
-        );
-        var url = `${process.env.BUCKET_URL}${s3FileName}`;
-        return url;
-      })
+      images &&
+        images.map(async (image) => {
+          const s3FileName = await uploadToS3(
+            image.buffer,
+            image.originalname,
+            image.mimetype
+          );
+          var url = `${process.env.BUCKET_URL}${s3FileName}`;
+          return url;
+        })
     );
 
     const updatedImages = [...remainingImages, ...s3ImageUrls];
