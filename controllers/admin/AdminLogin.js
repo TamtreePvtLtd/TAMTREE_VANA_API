@@ -10,7 +10,7 @@ const AdminModel = require("../../database/models/Admin");
  * @param {Response} res - The Express response object
  */
 exports.saveAdminCredentials = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { name,email, password } = req.body;
 
   try {
     // Check if the email already exists
@@ -29,28 +29,16 @@ else {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create new admin credentials with hashed password
-    const newAdmin = new AdminModel({ email, password: hashedPassword });
+    const newAdmin = new AdminModel({ name,email, password: hashedPassword });
     const savedAdmin = await newAdmin.save();
-
-    const token = jwt.sign(
-      {
-        adminId: savedAdmin._id,
-        email:savedAdmin.email,
-      },
-      SECRET_KEY
-    );
-
     res
-      .cookie(ACCESS_TOKEN, token, {
-        httpOnly: true,
-        maxAge: ExpirationInMilliSeconds, //2days
-      })
       .status(200)
       .json({
         message: "Signup Successful",
         data: {
           adminId: savedAdmin._id,
-          email:savedAdmin.email
+          name:savedAdmin.name,
+          email:savedAdmin.email,
         },
       });
   }
@@ -87,6 +75,7 @@ exports.adminLogin = async (req, res, next) => {
 
     var adminObj = {
       adminId: admin._id,
+      name:admin.name,
       email: admin.email,
     };
 
