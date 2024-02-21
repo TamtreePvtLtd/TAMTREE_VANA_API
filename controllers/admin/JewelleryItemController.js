@@ -17,7 +17,12 @@ const path = require("path");
 exports.createJewelleryItem = async (req, res, next) => {
   try {
     const formData = req.body;
-
+    const existingItem = await JewelleryItems.findOne({ title: formData.title });
+    if (existingItem) {
+      const error = new Error('A jewellery item title already exists');
+      error.statusCode = 400;
+      throw error;
+    }
     const images = req.files.filter((file) =>
       file.fieldname.startsWith("image")
     );
