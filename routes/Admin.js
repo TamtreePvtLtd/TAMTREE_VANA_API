@@ -14,6 +14,6 @@ router.post("/login", use(adminController.adminLogin));
 
 router.get("/isAuthorized",use(adminController.isAdminAuthorized));
 
-router.post("/logout", use(adminController.adminLogout));
+router.get("/logout", use(adminController.adminLogout));
 
 module.exports = router;
