@@ -138,24 +138,10 @@ exports.updateJewelleryItem = async (req, res, next) => {
 
     var item = await JewelleryItems.findById(JewelleryItemId);
 
-    if (!item._id) {
-      const error = new Error("item is not found");
-      error.statusCode = 459;
+    if (!item) {
+      const error = new Error("Item not found");
+      error.statusCode = 404;
       throw error;
-    }
-
-    // Handle image removal
-    const imagesToRemove = JSON.parse(formData.imagesToRemove || "[]");
-    const remainingImages = item.images.filter(
-      (img) => !imagesToRemove.includes(img)
-    );
-
-    if (imagesToRemove && imagesToRemove.length > 0) {
-      for (const url of imagesToRemove) {
-        if (url) {
-          await deleteImageFromS3(url);
-        }
-      }
     }
 
     let posterImageUrl = item.posterURL;
@@ -181,25 +167,43 @@ exports.updateJewelleryItem = async (req, res, next) => {
         })
     );
 
-    const updatedImages = [...remainingImages, ...s3ImageUrls];
+    let updatedImages = [...item.images];
+    if (s3ImageUrls && s3ImageUrls.length > 0) {
+      updatedImages = [...updatedImages, ...s3ImageUrls];
+    }
 
-    var updatedFields = {
+    const updatedFields = {
       _id: formData.id,
       title: formData.title,
       description: formData.description,
       images: updatedImages,
-      // netWeight: parseInt(formData.netWeight) ?? 0,
       inStock: formData.inStock,
       price: formData.price,
       posterURL: posterImageUrl,
       JewelleryCollection: jewelleryCollectionIds,
     };
+    console.log("updatedFields", updatedFields);
 
     const existingProduct = await JewelleryItems.findByIdAndUpdate(
       JewelleryItemId,
       { $set: updatedFields },
       { new: true }
     );
+
+    var removedImages = JSON.parse(formData.removedImages);
+
+    if (removedImages && removedImages.length > 0) {
+      for (const url of removedImages) {
+        if (url) {
+          await deleteImageFromS3(url);
+          updatedImages = updatedImages.filter((imgUrl) => imgUrl !== url);
+        }
+      }
+    }
+
+    await JewelleryItems.findByIdAndUpdate(JewelleryItemId, {
+      $set: { images: updatedImages },
+    });
 
     res.json({
       data: existingProduct,
