@@ -14,7 +14,9 @@ const connectionString = process.env.CONNECTION_STRING || "";
 const JewelleryCollectionRouter = require("./routes/JewelleryCollection");
 const JewelleryItemRouter = require("./routes/JewelleryItem");
 const customerRouter = require("./routes/Customer");
-const AdminRouter= require ("./routes/Admin")
+const AdminRouter = require("./routes/Admin");
+const ShippingRouter = require("./routes/Shipping");
+
 
 
 // Middlewares goes here
@@ -64,7 +66,8 @@ mongoose
 app.use("/JewelleryCollection", JewelleryCollectionRouter);
 app.use("/JewelleryItem", JewelleryItemRouter);
 app.use("/customer", customerRouter);
-app.use("/Admin",AdminRouter);
+app.use("/Admin", AdminRouter);
+app.use("/Shipping", ShippingRouter);
 
 //these middleware should at last but before error handlers
 app.use("*", (req, res, next) => {
